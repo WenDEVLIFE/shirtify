@@ -109,3 +109,14 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+
+  fonts:
+    - family : Roboto
+      fonts:
+        - asset: fonts/Roboto-Regular.ttf
+          weight: 400
+        - asset: fonts/Roboto-Italic.ttf
+          style: italic
+          weight: 400
+        - asset: fonts/Roboto-Bold.ttf
+          weight: 700

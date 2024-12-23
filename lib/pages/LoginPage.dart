@@ -52,8 +52,8 @@ class _LoginPageState extends State<LoginPage>{
                         style: TextStyle(
                           fontSize: 40,
                           color: ColorsPallete.white, // Color for "AID"
-                          fontFamily: 'LeagueSpartan',
-                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Roboto',
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
@@ -79,10 +79,10 @@ class _LoginPageState extends State<LoginPage>{
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       const Center(
-                        child: Text('LOGIN', style: TextStyle(fontSize: 30, fontFamily: 'LeagueSpartan',  fontWeight: FontWeight.w900, color: ColorsPallete.black)),
+                        child: Text('LOGIN', style: TextStyle(fontSize: 30, fontFamily: 'Roboto',  fontWeight: FontWeight.w700, color: ColorsPallete.black)),
                       ),
                       const SizedBox(height: 20),
-                      const Text('EMAIL', style: TextStyle(fontSize: 18, fontFamily: 'LeagueSpartan',  fontWeight: FontWeight.w600, color: ColorsPallete.black)),
+                      const Text('EMAIL', style: TextStyle(fontSize: 18, fontFamily: 'Roboto',  fontWeight: FontWeight.w600, color: ColorsPallete.black)),
                       const SizedBox(height: 10),
                       TextField(
                         controller: emailController,
@@ -96,14 +96,14 @@ class _LoginPageState extends State<LoginPage>{
                           ),
                         ),
                         style: const TextStyle(
-                          fontFamily: 'LeagueSpartan',
+                          fontFamily: 'Roboto',
                           color: Colors.black, // Set the text color here
                           fontSize: 16, // Set the text size here
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text('PASSWORD', style: TextStyle(fontSize: 18, fontFamily: 'LeagueSpartan',  fontWeight: FontWeight.w900, color: ColorsPallete.black)),
+                      const Text('PASSWORD', style: TextStyle(fontSize: 18, fontFamily: 'Roboto',  fontWeight: FontWeight.w700, color: ColorsPallete.black)),
                       const SizedBox(height: 10),
                       TextField(
                         controller: passwordController,
@@ -125,9 +125,9 @@ class _LoginPageState extends State<LoginPage>{
                         obscureText: obscureText1,
                         style: const TextStyle(
                           color: Colors.black, // Set the text color here
-                          fontFamily: 'LeagueSpartan',
+                          fontFamily: 'Roboto',
                           fontSize: 16, // Set the text size here
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -154,14 +154,14 @@ class _LoginPageState extends State<LoginPage>{
 
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorsPallete.gray, // Background color of the button
+                                backgroundColor: ColorsPallete.whitegray, // Background color of the button
                               ),
-                              child: const Text('Sign In',
+                              child: Text('Sign In',
                                 style: TextStyle(
                                   fontSize: 20,
-                                  color: ColorsPallete.white,
-                                  fontFamily: 'LeagueSpartan',
-                                  fontWeight: FontWeight.w600,
+                                  color: ColorsPallete.orange,
+                                  fontFamily: 'Roboto',
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
@@ -182,7 +182,7 @@ class _LoginPageState extends State<LoginPage>{
                               style: TextStyle(
                                 fontSize: 18,
                                 color: ColorsPallete.orange, // Color for "AID"
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w400,
                                 fontFamily: 'Roboto',
                               ),
                             ),
@@ -203,7 +203,7 @@ class _LoginPageState extends State<LoginPage>{
                               style: TextStyle(
                                 fontSize: 18,
                                 color: ColorsPallete.orange, // Color for "AID"
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w400,
                                 fontFamily: 'Roboto',
                               ),
                             ),

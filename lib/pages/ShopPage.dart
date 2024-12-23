@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shirtify/main.dart';
 
 import '../component/Colors.dart';
 import '../component/Images.dart';
@@ -15,8 +17,23 @@ class ShopPage extends StatefulWidget {
 class _ShopPageState extends State<ShopPage> {
   final TextEditingController _searchController = TextEditingController();
   List<Product> products = [
-    Product(name: 'bench red T-shirt', imageUrl: 'assets/images/bench.png', price: 500.00, description: 'This is a red T-shirt from Bench', ratings: 4.5),
-    Product(name: 'Winnie the Pooh T-shirt', imageUrl: 'assets/images/pooh.png', price: 300.00, description: 'This is a T-shirt with Winnie the Pooh print', ratings: 4.0),
+    Product(
+        name: 'bench red T-shirt',
+        imageUrl: 'assets/images/bench.png',
+        price: 500.00,
+        description:'Step up your style game with the bold and iconic Bench Red '
+            'T-Shirt! Designed for trendsetters who love to stand out, this vibrant'
+            ' tee combines unparalleled comfort with timeless urban flair. '
+            'Whether you’re hitting the streets or chilling with friends, '
+            'the Bench Red T-Shirt is your ultimate go-to for effortless cool.'
+            ' Get ready to make a statement—because in this shirt, all eyes are on you!',
+        ratings: 4.5),
+    Product(
+        name: 'Winnie the Pooh T-shirt',
+        imageUrl: 'assets/images/pooh.png',
+        price: 300.00,
+        description: 'This is a T-shirt with Winnie the Pooh print',
+        ratings: 4.0),
     // Add more products here
   ];
   List<Product> filteredProducts = [];
@@ -53,7 +70,7 @@ class _ShopPageState extends State<ShopPage> {
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Roboto',
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
         automaticallyImplyLeading: false,
@@ -74,7 +91,7 @@ class _ShopPageState extends State<ShopPage> {
                   border: Border.all(color: ColorsPallete.orange), // Border color
                 ),
                 child: TextField(
-                  style: const TextStyle(color: Colors.black, fontFamily: 'Roboto', fontWeight: FontWeight.w600),
+                  style: const TextStyle(color: Colors.black, fontFamily: 'Roboto', fontWeight: FontWeight.w700),
                   controller: _searchController,
                   decoration: const InputDecoration(
                     labelText: 'Search a product',
@@ -104,6 +121,15 @@ class _ShopPageState extends State<ShopPage> {
                     onTap: () {
                       // Handle the click event here
                       print('Clicked on ${product.name}');
+                      Map <String , dynamic> productData = {
+                        'name': product.name,
+                        'imageUrl': product.imageUrl,
+                        'price': product.price,
+                        'description': product.description,
+                        'ratings': product.ratings,
+                      };
+
+                      context.push('/displayproduct', extra: productData);
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10), // Optional margin
@@ -123,7 +149,7 @@ class _ShopPageState extends State<ShopPage> {
                               color: Colors.white, // Set the text color here
                               fontFamily: 'Roboto',
                               fontSize: 20,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                           const SizedBox(height: 10), // Space between text and price
@@ -133,7 +159,7 @@ class _ShopPageState extends State<ShopPage> {
                               color: Colors.white, // Set the text color here
                               fontFamily: 'Roboto',
                               fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                           const SizedBox(height: 10), // Space between price and button
@@ -151,17 +177,26 @@ class _ShopPageState extends State<ShopPage> {
                                 child:  ElevatedButton.icon(
                                   onPressed: () {
                                     // call the controller
+                                    Map <String , dynamic> productData = {
+                                      'name': product.name,
+                                      'imageUrl': product.imageUrl,
+                                      'price': product.price,
+                                      'description': product.description,
+                                      'ratings': product.ratings,
+                                    };
+
+                                    context.push('/displayproduct', extra: productData);
 
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: ColorsPallete.gray, // Background color of the button
+                                    backgroundColor: ColorsPallete.whiteish, // Background color of the button
                                   ),
-                                  icon: const Icon(Icons.remove_red_eye_outlined, color: ColorsPallete.white,), // Add your desired icon here
-                                  label: const Text('View Product',style: TextStyle(
+                                  icon: Icon(Icons.remove_red_eye_outlined, color: ColorsPallete.orange,), // Add your desired icon here
+                                  label: Text('View Product',style: TextStyle(
                                     fontSize: 20,
-                                    color: ColorsPallete.white,
-                                    fontFamily: 'LeagueSpartan',
-                                    fontWeight: FontWeight.w600,
+                                    color: ColorsPallete.orange,
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.w700,
                                   ),
                                   ),
                                   ),

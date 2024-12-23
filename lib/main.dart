@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shirtify/pages/DisplayProduct.dart';
 import 'package:shirtify/pages/LoginPage.dart';
 import 'package:shirtify/pages/RegisterPage.dart';
 
@@ -27,6 +28,11 @@ class MyApp extends StatelessWidget {
             final extra = state.extra as Map<String, dynamic>;
 
             return Bottomnavigation(extra: extra);
+          }),
+          GoRoute(path: '/displayproduct', builder: (context, state){
+            final extra = state.extra as Map<String, dynamic>;
+
+            return DisplayProduct(extra: extra);
           }),
 
         ],

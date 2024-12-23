@@ -12,4 +12,5 @@ class ColorsPallete {
   static Color? redwhite =  Colors.red[700];
   static Color orange = const Color(0xFFFF6340);
   static Color gray = const Color(0xFF696969);
+  static Color whiteish = const Color(0xFFFFEEE8);
 }
