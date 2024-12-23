@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shirtify/model/OrderModel.dart';
+import 'package:shirtify/database/LoadOrder.dart';
 
 import '../component/Colors.dart';
-import '../model/Product.dart';
+import '../component/SessionManagement.dart';
 
 class Orderspage extends StatefulWidget {
   const Orderspage({Key? key}) : super(key: key);
@@ -13,39 +17,65 @@ class Orderspage extends StatefulWidget {
 
 class OrderState extends State<Orderspage> {
   final TextEditingController _searchController = TextEditingController();
-  List<Product> products = [];
-  List<Product> filteredProducts = [];
-  bool isLoading = true; // Add a flag to indicate loading state
+  List<Ordermodel> products = [];
+  List<Ordermodel> filteredProducts = [];
+  bool isLoading = true;
+  late StreamSubscription<List<Ordermodel>> _subscription;
+  double totalAmount = 0.0;
+  late String email;
+  late String id;
+  Map<String, dynamic> userInfo = {};
 
   @override
   void initState() {
     super.initState();
-    filteredProducts = products;
     _searchController.addListener(_filterProducts);
-    _loadProducts(); // Simulate loading products
+    LoadUser();
   }
 
   void _filterProducts() {
     setState(() {
       filteredProducts = products
           .where((product) =>
-          product.name.toLowerCase().contains(_searchController.text.toLowerCase()))
+          product.productname.toLowerCase().contains(_searchController.text.toLowerCase()))
           .toList();
     });
   }
 
-  Future<void> _loadProducts() async {
-    // Simulate a delay for loading products
-    await Future.delayed(const Duration(seconds: 2));
+  Future<void> LoadUser() async {
+    final Sessionmanagement _sessionManager = Sessionmanagement();
+    userInfo = (await _sessionManager.getUserInfo())!;
     setState(() {
-      isLoading = false; // Set loading to false after loading products
+      email = userInfo['email'];
+      id = userInfo['id'];
     });
+    _loadProducts();
+  }
+
+  void _loadProducts() {
+    final LoadOrder loadOrder = LoadOrder();
+    _subscription = loadOrder.loadProducts(id).listen((loadedProducts) {
+      setState(() {
+        products = loadedProducts;
+        filteredProducts = products;
+        isLoading = false;
+        _updateTotalAmount();
+      });
+    });
+  }
+
+  void _updateTotalAmount() {
+    totalAmount = 0.0;
+    for (var product in filteredProducts) {
+      totalAmount += product.total;
+    }
   }
 
   @override
   void dispose() {
     _searchController.removeListener(_filterProducts);
     _searchController.dispose();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -65,18 +95,18 @@ class OrderState extends State<Orderspage> {
         backgroundColor: ColorsPallete.orange,
       ),
       body: Container(
-        color: Colors.transparent, // Set the background color here
+        color: Colors.transparent,
         child: Column(
           children: <Widget>[
             const SizedBox(height: 20),
             Center(
               child: Container(
                 padding: const EdgeInsets.all(10.0),
-                width: 380, // Adjust the width as needed
+                width: 380,
                 decoration: BoxDecoration(
-                  color: Colors.white, // Background color of the TextField
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: ColorsPallete.orange), // Border color
+                  border: Border.all(color: ColorsPallete.orange),
                 ),
                 child: TextField(
                   style: const TextStyle(color: Colors.black, fontFamily: 'Roboto', fontWeight: FontWeight.w700),
@@ -134,58 +164,103 @@ class OrderState extends State<Orderspage> {
                       // Handle the click event here
                     },
                     child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10), // Optional margin
+                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                       decoration: BoxDecoration(
-                        color: ColorsPallete.orange, // Set the background color here
-                        borderRadius: BorderRadius.circular(10), // Set the border radius here
+                        color: ColorsPallete.orange,
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const SizedBox(height: 10),
-                          Image.asset(product.imageUrl, height: 100, width: 100), // Adjust the height and width as needed
-                          const SizedBox(height: 10), // Space between image and text
+                          Image.asset(product.image, height: 100, width: 100),
+                          const SizedBox(height: 10),
                           Text(
-                            product.name,
+                            product.productname,
                             style: const TextStyle(
-                              color: Colors.white, // Set the text color here
+                              color: Colors.white,
                               fontFamily: 'Roboto',
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 10), // Space between text and price
+                          const SizedBox(height: 10),
                           Text(
                             '\₱${product.price}',
                             style: const TextStyle(
-                              color: Colors.white, // Set the text color here
+                              color: Colors.white,
                               fontFamily: 'Roboto',
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 10), // Space between price and button
+                          Text(
+                            ' Quantity: ${product.quantity}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Roboto',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            ' Size: ${product.size}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Roboto',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            ' Total: ${product.total}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Roboto',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            ' Paid Service: ${product.paidService}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Roboto',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            ' Order Date: ${product.orderDate} at ${product.orderTime}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Roboto',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
                           Center(
                             child: Container(
-                              width: 350, // Adjust the width as needed
+                              width: 350,
                               decoration: BoxDecoration(
-                                color: Colors.transparent, // Background color of the TextField
+                                color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(5),
-                                border: Border.all(color: Colors.transparent), // Border color
+                                border: Border.all(color: Colors.transparent),
                               ),
                               child: ButtonTheme(
-                                minWidth: 300, // Adjust the width as needed
-                                height: 100, // Adjust the height as needed
+                                minWidth: 300,
+                                height: 100,
                                 child: ElevatedButton.icon(
                                   onPressed: () {
                                     // Handle the button press
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: ColorsPallete.whiteish, // Background color of the button
+                                    backgroundColor: ColorsPallete.whiteish,
                                   ),
-                                  icon: Icon(Icons.remove_red_eye_outlined, color: ColorsPallete.orange), // Add your desired icon here
+                                  icon: Icon(Icons.delete, color: ColorsPallete.orange),
                                   label: Text(
-                                    'View Product',
+                                    'Delete Order History',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: ColorsPallete.orange,
@@ -205,19 +280,18 @@ class OrderState extends State<Orderspage> {
               ),
             ),
             Container(
-              width: 350, // Adjust the width as needed
+              width: 350,
               decoration: BoxDecoration(
-                color: Colors.transparent, // Background color of the TextField
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: Colors.transparent), // Border color
+                border: Border.all(color: Colors.transparent),
               ),
               child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal, // Set scroll direction to horizontal
+                scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    // Add your child widgets here
                     Text("Total Orders: ", style: TextStyle(color: ColorsPallete.orange, fontSize: 20, fontWeight: FontWeight.w700)),
-                    Text("₱0.00", style: TextStyle(color: ColorsPallete.orange, fontSize: 20, fontWeight: FontWeight.w700)),
+                    Text("₱${totalAmount.toStringAsFixed(2)}", style: TextStyle(color: ColorsPallete.orange, fontSize: 20, fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),

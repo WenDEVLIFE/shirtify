@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +9,7 @@ import '../component/Colors.dart';
 import '../component/SessionManagement.dart';
 import '../database/AddToOrder.dart';
 import '../database/DeleteAddCart.dart';
+import '../database/LoadAddCart.dart';
 
 class AddCartPage extends StatefulWidget {
   const AddCartPage({Key? key}) : super(key: key);
@@ -25,6 +28,7 @@ class _AddCartPageState extends State<AddCartPage> {
   late String id;
   Map<String, dynamic> userInfo = {};
   double totalAmount = 0.0;
+  late StreamSubscription<List<AddCartModel>> _subscription;
 
   @override
   void initState() {
@@ -52,26 +56,15 @@ class _AddCartPageState extends State<AddCartPage> {
     _loadProducts();
   }
 
-  Future<void> _loadProducts() async {
-    final QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('addcart')
-        .where('userid', isEqualTo: id)
-        .get();
-
-    setState(() {
-      products = snapshot.docs.map((doc) {
-        return AddCartModel(
-          id: doc.id,
-          productname: doc['productName'],
-          image: doc['imageUrl'],
-          size: doc['size'],
-          price: doc['price'],
-          quantity: doc['quantity'],
-        );
-      }).toList();
-      filteredProducts = products;
-      isLoading = false;
-      checked = List<bool>.filled(products.length, false);
+  void _loadProducts() {
+    final LoadAddCart loadAddCart = LoadAddCart();
+    _subscription = loadAddCart.loadProducts(id).listen((loadedProducts) {
+      setState(() {
+        products = loadedProducts;
+        filteredProducts = products;
+        isLoading = false;
+        checked = List<bool>.filled(products.length, false);
+      });
     });
   }
 
