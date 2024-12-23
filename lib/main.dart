@@ -1,5 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shirtify/pages/LoginPage.dart';
 
 import 'component/Colors.dart';
 import 'component/Images.dart';
@@ -17,6 +19,7 @@ class MyApp extends StatelessWidget {
     final GoRouter route = GoRouter(
         routes: [
         GoRoute(path: '/', builder: (context, state) => MyHomePage(title: 'Flutter Demo Home Page')),
+        GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
 
         ],
     );
@@ -53,6 +56,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void LoadingEnable() {
     setState(() {
       _isLoading = true;
+    });
+    Future.delayed(const Duration(seconds: 5), () {
+      setState(() {
+        _isLoading = false;
+
+        GoRouter.of(context).go('/login');
+      });
+
     });
 
   }
