@@ -3,6 +3,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shirtify/pages/AddCartPage.dart';
+import 'package:shirtify/pages/ProfilePage.dart';
 import 'package:shirtify/pages/ShopPage.dart';
 
 import 'Colors.dart';
@@ -67,14 +68,15 @@ class _NavControllerState extends State<Bottomnavigation> {
     List<Widget> pages = [];
     if (role == 'Admin') {
       pages = [
-        Container(),
-        Container(),
+        const ShopPage(),
+        const AddCartPage(),
+        const ShopPage(),
       ];
     } else {
       pages = [
        const ShopPage(),
        const AddCartPage(),
-        Container(),
+        const ProfilePage(),
       ];
     }
     return pages;
