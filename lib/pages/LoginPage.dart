@@ -150,7 +150,7 @@ class _LoginPageState extends State<LoginPage>{
                                   'role' : 'User',
                                   'id' : '1',
                                 };
-                                context.push('/bottomnavigation', extra: extra);
+                                context.go('/bottomnavigation', extra: extra);
 
                               },
                               style: ElevatedButton.styleFrom(
