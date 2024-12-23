@@ -6,6 +6,7 @@ import 'package:shirtify/pages/RegisterPage.dart';
 
 import 'component/Colors.dart';
 import 'component/Images.dart';
+import 'component/bottomnavigation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,6 +23,11 @@ class MyApp extends StatelessWidget {
         GoRoute(path: '/', builder: (context, state) => MyHomePage(title: 'Flutter Demo Home Page')),
         GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
           GoRoute(path: '/signup', builder: (context, state) => const RegisterPage()),
+          GoRoute(path: '/bottomnavigation', builder: (context, state){
+            final extra = state.extra as Map<String, dynamic>;
+
+            return Bottomnavigation(extra: extra);
+          }),
 
         ],
     );

@@ -145,6 +145,12 @@ class _LoginPageState extends State<LoginPage>{
                             child: ElevatedButton(
                               onPressed: () {
                                 // call the controller
+                                Map <String, dynamic> extra = {
+                                  'email': emailController.text,
+                                  'role' : 'User',
+                                  'id' : '1',
+                                };
+                                context.push('/bottomnavigation', extra: extra);
 
                               },
                               style: ElevatedButton.styleFrom(
