@@ -5,6 +5,7 @@ import 'package:shirtify/model/AddCartModel.dart';
 
 import '../component/Colors.dart';
 import '../component/SessionManagement.dart';
+import '../database/AddToOrder.dart';
 
 class AddCartPage extends StatefulWidget {
   const AddCartPage({Key? key}) : super(key: key);
@@ -17,11 +18,12 @@ class _AddCartPageState extends State<AddCartPage> {
   final TextEditingController _searchController = TextEditingController();
   List<AddCartModel> products = [];
   List<AddCartModel> filteredProducts = [];
-  bool isLoading = true; // Add a flag to indicate loading state
+  bool isLoading = true;
   List<bool> checked = [];
   late String email;
   late String id;
   Map<String, dynamic> userInfo = {};
+  double totalAmount = 0.0;
 
   @override
   void initState() {
@@ -46,13 +48,10 @@ class _AddCartPageState extends State<AddCartPage> {
       email = userInfo['email'];
       id = userInfo['id'];
     });
-    print('Email: $email');
-    print('ID: $id');
     _loadProducts();
   }
 
   Future<void> _loadProducts() async {
-    // Retrieve products from Firebase
     final QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('addcart')
         .where('userid', isEqualTo: id)
@@ -61,7 +60,7 @@ class _AddCartPageState extends State<AddCartPage> {
     setState(() {
       products = snapshot.docs.map((doc) {
         return AddCartModel(
-          id: doc['userid'],
+          id: doc.id,
           productname: doc['productName'],
           image: doc['imageUrl'],
           size: doc['size'],
@@ -70,9 +69,38 @@ class _AddCartPageState extends State<AddCartPage> {
         );
       }).toList();
       filteredProducts = products;
-      isLoading = false; // Set loading to false after loading products
+      isLoading = false;
       checked = List<bool>.filled(products.length, false);
     });
+  }
+
+  void _updateTotalAmount() {
+    totalAmount = 0.0;
+    for (int i = 0; i < filteredProducts.length; i++) {
+      if (checked[i]) {
+        totalAmount += filteredProducts[i].price * filteredProducts[i].quantity;
+      }
+    }
+  }
+
+  Future<void> _checkout() async {
+    List<AddCartModel> selectedProducts = [];
+    for (int i = 0; i < filteredProducts.length; i++) {
+      if (checked[i]) {
+        selectedProducts.add(filteredProducts[i]);
+      }
+    }
+
+    if (selectedProducts.isNotEmpty) {
+      final OrderService orderService = OrderService();
+      await orderService.addOrder(selectedProducts, id);
+      setState(() {
+        products.removeWhere((product) => selectedProducts.contains(product));
+        filteredProducts = products;
+        checked = List<bool>.filled(products.length, false);
+        totalAmount = 0.0;
+      });
+    }
   }
 
   @override
@@ -98,18 +126,18 @@ class _AddCartPageState extends State<AddCartPage> {
         backgroundColor: ColorsPallete.orange,
       ),
       body: Container(
-        color: Colors.transparent, // Set the background color here
+        color: Colors.transparent,
         child: Column(
           children: <Widget>[
             const SizedBox(height: 20),
             Center(
               child: Container(
                 padding: const EdgeInsets.all(10.0),
-                width: 380, // Adjust the width as needed
+                width: 380,
                 decoration: BoxDecoration(
-                  color: Colors.white, // Background color of the TextField
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: ColorsPallete.orange), // Border color
+                  border: Border.all(color: ColorsPallete.orange),
                 ),
                 child: TextField(
                   style: const TextStyle(color: Colors.black, fontFamily: 'Roboto', fontWeight: FontWeight.w700),
@@ -167,77 +195,93 @@ class _AddCartPageState extends State<AddCartPage> {
                       // Handle the click event here
                     },
                     child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10), // Optional margin
+                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                       decoration: BoxDecoration(
-                        color: ColorsPallete.orange, // Set the background color here
-                        borderRadius: BorderRadius.circular(10), // Set the border radius here
+                        color: ColorsPallete.orange,
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const SizedBox(height: 10),
-                          Image.asset(product.image, height: 100, width: 100), // Adjust the height and width as needed
-                          const SizedBox(height: 10), // Space between image and text
+                          Image.asset(product.image, height: 100, width: 100),
+                          const SizedBox(height: 10),
                           Text(
                             product.productname,
                             style: const TextStyle(
-                              color: Colors.white, // Set the text color here
+                              color: Colors.white,
                               fontFamily: 'Roboto',
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 10), // Space between text and price
+                          const SizedBox(height: 10),
                           Text(
                             '\₱${product.price}',
                             style: const TextStyle(
-                              color: Colors.white, // Set the text color here
+                              color: Colors.white,
                               fontFamily: 'Roboto',
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 10), // Space between price and quantity
+                          const SizedBox(height: 10),
                           Text(
                             'Quantity: ${product.quantity}',
                             style: const TextStyle(
-                              color: Colors.white, // Set the text color here
+                              color: Colors.white,
                               fontFamily: 'Roboto',
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 10), // Space between quantity and checkbox
-                          Checkbox(
-                            value: checked[index],
-                            onChanged: (bool? value) {
-                              setState(() {
-                                checked[index] = value!;
-                              });
-                            },
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Checkbox(
+                                value: checked[index],
+                                onChanged: (value) {
+                                  setState(() {
+                                    checked[index] = value!;
+                                    _updateTotalAmount();
+                                  });
+                                },
+                                activeColor: Colors.deepPurpleAccent,
+                              ),
+                              const Text(
+                                'Select item',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Roboto',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 10), // Space between checkbox and button
+                          const SizedBox(height: 10),
                           Center(
                             child: Container(
-                              width: 350, // Adjust the width as needed
+                              width: 350,
                               decoration: BoxDecoration(
-                                color: Colors.transparent, // Background color of the TextField
+                                color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(5),
-                                border: Border.all(color: Colors.transparent), // Border color
+                                border: Border.all(color: Colors.transparent),
                               ),
                               child: ButtonTheme(
-                                minWidth: 300, // Adjust the width as needed
-                                height: 100, // Adjust the height as needed
+                                minWidth: 300,
+                                height: 100,
                                 child: ElevatedButton.icon(
                                   onPressed: () {
                                     // Handle the button press
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: ColorsPallete.whiteish, // Background color of the button
+                                    backgroundColor: ColorsPallete.whiteish,
                                   ),
-                                  icon: Icon(Icons.remove_red_eye_outlined, color: ColorsPallete.orange), // Add your desired icon here
+                                  icon: Icon(Icons.delete, color: ColorsPallete.orange),
                                   label: Text(
-                                    'View Product',
+                                    'Delete to cart',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: ColorsPallete.orange,
@@ -249,6 +293,7 @@ class _AddCartPageState extends State<AddCartPage> {
                               ),
                             ),
                           ),
+                          SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -257,19 +302,81 @@ class _AddCartPageState extends State<AddCartPage> {
               ),
             ),
             Container(
-              width: 350, // Adjust the width as needed
+              width: 350,
               decoration: BoxDecoration(
-                color: Colors.transparent, // Background color of the TextField
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: Colors.transparent), // Border color
+                border: Border.all(color: Colors.transparent),
               ),
               child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal, // Set scroll direction to horizontal
+                scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    // Add your child widgets here
                     Text("Total Checkout: ", style: TextStyle(color: ColorsPallete.orange, fontSize: 20, fontWeight: FontWeight.w700)),
-                    Text("₱0.00", style: TextStyle(color: ColorsPallete.orange, fontSize: 20, fontWeight: FontWeight.w700)),
+                    Text("₱${totalAmount.toStringAsFixed(2)}", style: TextStyle(color: ColorsPallete.orange, fontSize: 20, fontWeight: FontWeight.w700)),
+                    const SizedBox(width: 10),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        if (totalAmount == 0.0) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Error'),
+                                content: const Text('Please select an item to checkout'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Checkout', style: TextStyle(color: ColorsPallete.orange, fontSize: 20, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
+                                backgroundColor: ColorsPallete.orange,
+                                content: const Text('Are you sure you want to checkout?', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () async {
+                                      await _checkout();
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Yes', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('No', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorsPallete.whiteish,
+                      ),
+                      icon: Icon(Icons.shopping_cart, color: ColorsPallete.orange),
+                      label: Text(
+                        'Checkout',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: ColorsPallete.orange,
+                          fontFamily: 'Roboto',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

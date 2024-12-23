@@ -6,6 +6,7 @@ class AddCartModel {
   final double price;
   final int quantity;
 
+
   AddCartModel({
     required this.id,
     required this.productname,

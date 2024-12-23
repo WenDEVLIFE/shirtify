@@ -203,6 +203,7 @@ class _ShopPageState extends State<ShopPage> {
                               ),
                             ),
                           ),
+                          SizedBox(height: 10),
                         ],
                       ),
                     ),
