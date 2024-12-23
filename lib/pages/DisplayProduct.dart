@@ -139,7 +139,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 10.0), // Add left margin
+                      padding: const EdgeInsets.only(left: 10.0), // Add left marginma
                       child: Text(
                         "Description: $description",
                         style: const TextStyle(
