@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shirtify/pages/ChangePassword_Page.dart';
 import 'package:shirtify/pages/DisplayProduct.dart';
 import 'package:shirtify/pages/LoginPage.dart';
+import 'package:shirtify/pages/OrdersPage.dart';
 import 'package:shirtify/pages/RegisterPage.dart';
 
 import 'component/Colors.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
             return DisplayProduct(extra: extra);
           }),
           GoRoute(path: '/changepassword', builder: (context, state) => const ChangePasswordPage()),
+          GoRoute(path:'/orders' , builder: (context, state) => const Orderspage()),
 
         ],
     );
