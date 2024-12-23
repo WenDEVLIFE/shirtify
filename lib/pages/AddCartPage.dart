@@ -6,6 +6,7 @@ import 'package:shirtify/model/AddCartModel.dart';
 import '../component/Colors.dart';
 import '../component/SessionManagement.dart';
 import '../database/AddToOrder.dart';
+import '../database/DeleteAddCart.dart';
 
 class AddCartPage extends StatefulWidget {
   const AddCartPage({Key? key}) : super(key: key);
@@ -204,7 +205,7 @@ class _AddCartPageState extends State<AddCartPage> {
                 } else {
                   // Execute the OrderService
                   final OrderService orderService = OrderService();
-                  await orderService.addOrder(selectedProducts, id, totalAmount);
+                  await orderService.addOrder(selectedProducts, id, totalAmount, context);
                   setState(() {
                     products.removeWhere((product) =>
                         selectedProducts.contains(product));
@@ -394,6 +395,34 @@ class _AddCartPageState extends State<AddCartPage> {
                                 child: ElevatedButton.icon(
                                   onPressed: () {
                                     // Handle the button press
+                                    showDialog(context: context, builder: (context) {
+                                      return AlertDialog(
+                                        backgroundColor: ColorsPallete.orange,
+                                        title: const Text('Delete Item', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
+                                        content: const Text('Are you sure you want to delete this item?', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('No', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              await DeleteCart.deleteCart(product.id, context);
+                                              Navigator.of(context).pop();
+                                              setState(() {
+                                                products.remove(product);
+                                                filteredProducts = products;
+                                                checked = List<bool>.filled(products.length, false);
+                                                _updateTotalAmount();
+                                              });
+                                            },
+                                            child: const Text('Yes', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
+                                          ),
+                                        ],
+                                      );
+                                    });
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: ColorsPallete.whiteish,
@@ -441,14 +470,15 @@ class _AddCartPageState extends State<AddCartPage> {
                             context: context,
                             builder: (context) {
                               return AlertDialog(
-                                title: const Text('Error'),
-                                content: const Text('Please select an item to checkout'),
+                                backgroundColor: ColorsPallete.orange,
+                                title: const Text('Error', style: TextStyle(color: ColorsPallete.white, fontSize: 20, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
+                                content: const Text('Please select an item to checkout' , style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
-                                    child: const Text('OK'),
+                                    child: const Text('OK' , style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Roboto')),
                                   ),
                                 ],
                               );
