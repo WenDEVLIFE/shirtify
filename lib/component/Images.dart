@@ -1,3 +1,3 @@
 class Images {
-  static String logoPath  = 'assets/appicon/appicon.PNG';
+  static String logoPath  = 'assets/icons/transparent.png';
 }
