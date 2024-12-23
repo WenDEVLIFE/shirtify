@@ -86,7 +86,7 @@ class ProfilePageState extends State<ProfilePage> {
                     text: 'ORDERS',
                     onTap: () {
                       print('Notification clicked');
-                      context.push('/notification');
+                      context.push('/orders');
                     },
                   ),
                   const SizedBox(height: 20),

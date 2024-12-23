@@ -114,7 +114,7 @@ class OrderState extends State<Orderspage> {
                   children: [
                     const SizedBox(height: 20),
                     Text(
-                      'You have no items in your cart',
+                      'You have no items in your orders',
                       style: TextStyle(
                         color: ColorsPallete.orange,
                         fontFamily: 'Roboto',
@@ -216,7 +216,7 @@ class OrderState extends State<Orderspage> {
                 child: Row(
                   children: [
                     // Add your child widgets here
-                    Text("Total Checkout: ", style: TextStyle(color: ColorsPallete.orange, fontSize: 20, fontWeight: FontWeight.w700)),
+                    Text("Total Orders: ", style: TextStyle(color: ColorsPallete.orange, fontSize: 20, fontWeight: FontWeight.w700)),
                     Text("₱0.00", style: TextStyle(color: ColorsPallete.orange, fontSize: 20, fontWeight: FontWeight.w700)),
                   ],
                 ),
