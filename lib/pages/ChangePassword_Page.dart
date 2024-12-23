@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 
 import '../component/Colors.dart';
+import '../component/SessionManagement.dart';
+import '../database/UpdatePassword.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({Key? key}) : super(key: key);
@@ -17,6 +20,27 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   bool obscureText1 = true;
   bool obscureText2 = true;
+
+  late String email;
+  late String id;
+  Map<String, dynamic> userInfo = {};
+
+  @override
+  void initState() {
+    super.initState();
+    LoadUser();
+  }
+
+  Future<void> LoadUser() async {
+    final Sessionmanagement _sessionManager = Sessionmanagement();
+    userInfo = (await _sessionManager.getUserInfo())!;
+    setState(() {
+      email = userInfo['email'];
+      id = userInfo['id'];
+      print('Email: $email');
+      print('ID: $id');
+    });
+  }
 
   void togglePasswordVisibility1() {
     setState(() {
@@ -145,8 +169,18 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       minWidth: 300, // Adjust the width as needed
                       height: 100, // Adjust the height as needed
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           // call the controller
+                          if (oldpasswordController.text.isNotEmpty && newpasswordController.text.isNotEmpty) {
+                            await UpdatePassword().updatePassword(
+                              {'id': id, 'oldpassword': oldpasswordController.text, 'newpassword': newpasswordController.text},
+                              context,
+                              ClearFields,
+                            );
+                          } else {
+                            // Show error message
+                            Fluttertoast.showToast(msg: 'Please fill all fields', backgroundColor: Colors.red);
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorsPallete.whiteish, // Background color of the button
@@ -169,5 +203,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         ),
       ),
     );
+  }
+
+  void ClearFields() {
+    oldpasswordController.clear();
+    newpasswordController.clear();
   }
 }
