@@ -15,8 +15,8 @@ class ShopPage extends StatefulWidget {
 class _ShopPageState extends State<ShopPage> {
   final TextEditingController _searchController = TextEditingController();
   List<Product> products = [
-    Product(name: 'bench red T-shirt', imageUrl: 'assets/images/bench.png'),
-    Product(name: 'Winnie the Pooh T-shirt', imageUrl: 'assets/images/pooh.png'),
+    Product(name: 'bench red T-shirt', imageUrl: 'assets/images/bench.png', price: 500.00, description: 'This is a red T-shirt from Bench', ratings: 4.5),
+    Product(name: 'Winnie the Pooh T-shirt', imageUrl: 'assets/images/pooh.png', price: 300.00, description: 'This is a T-shirt with Winnie the Pooh print', ratings: 4.0),
     // Add more products here
   ];
   List<Product> filteredProducts = [];
@@ -106,7 +106,6 @@ class _ShopPageState extends State<ShopPage> {
                       print('Clicked on ${product.name}');
                     },
                     child: Container(
-                      height: 200,
                       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10), // Optional margin
                       decoration: BoxDecoration(
                         color: ColorsPallete.orange, // Set the background color here
@@ -127,6 +126,17 @@ class _ShopPageState extends State<ShopPage> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                          const SizedBox(height: 10), // Space between text and price
+                          Text(
+                            '\₱${product.price}',
+                            style: const TextStyle(
+                              color: Colors.white, // Set the text color here
+                              fontFamily: 'Roboto',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 10), // Space between price and button
                           Center(
                             child:Container(
                               width: 350, // Adjust the width as needed
