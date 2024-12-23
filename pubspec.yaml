@@ -43,6 +43,8 @@ dependencies:
   shared_preferences: ^2.0.13
   firebase_core: ^3.6.0
   cloud_firestore: ^5.4.3
+  numberpicker: ^2.1.0
+
 
 dev_dependencies:
   flutter_test:
