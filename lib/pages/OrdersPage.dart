@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shirtify/model/OrderModel.dart';
 import 'package:shirtify/database/LoadOrder.dart';
+import 'package:shirtify/database/DeleteOrderHistory.dart';
 
 import '../component/Colors.dart';
 import '../component/SessionManagement.dart';
@@ -69,6 +70,12 @@ class OrderState extends State<Orderspage> {
     for (var product in filteredProducts) {
       totalAmount += product.total;
     }
+  }
+
+  Future<void> _deleteOrder(String orderId) async {
+    final DeleteOrderHistory deleteOrderHistory = DeleteOrderHistory();
+    await deleteOrderHistory.deleteOrderHistory(orderId, context);
+    _loadProducts();
   }
 
   @override
@@ -253,7 +260,7 @@ class OrderState extends State<Orderspage> {
                                 height: 100,
                                 child: ElevatedButton.icon(
                                   onPressed: () {
-                                    // Handle the button press
+                                    _deleteOrder(product.id);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: ColorsPallete.whiteish,
