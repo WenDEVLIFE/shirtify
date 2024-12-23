@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shirtify/model/AddCartModel.dart';
 
 import '../component/Colors.dart';
-import '../model/Product.dart';
+import '../component/SessionManagement.dart';
 
 class AddCartPage extends StatefulWidget {
- const AddCartPage({Key? key}) : super(key: key);
+  const AddCartPage({Key? key}) : super(key: key);
 
   @override
   _AddCartPageState createState() => _AddCartPageState();
@@ -13,32 +15,63 @@ class AddCartPage extends StatefulWidget {
 
 class _AddCartPageState extends State<AddCartPage> {
   final TextEditingController _searchController = TextEditingController();
-  List<Product> products = [];
-  List<Product> filteredProducts = [];
+  List<AddCartModel> products = [];
+  List<AddCartModel> filteredProducts = [];
   bool isLoading = true; // Add a flag to indicate loading state
+  List<bool> checked = [];
+  late String email;
+  late String id;
+  Map<String, dynamic> userInfo = {};
 
   @override
   void initState() {
     super.initState();
-    filteredProducts = products;
     _searchController.addListener(_filterProducts);
-    _loadProducts(); // Simulate loading products
+    LoadUser();
   }
 
   void _filterProducts() {
     setState(() {
       filteredProducts = products
           .where((product) =>
-          product.name.toLowerCase().contains(_searchController.text.toLowerCase()))
+          product.productname.toLowerCase().contains(_searchController.text.toLowerCase()))
           .toList();
     });
   }
 
-  Future<void> _loadProducts() async {
-    // Simulate a delay for loading products
-    await Future.delayed(const Duration(seconds: 2));
+  Future<void> LoadUser() async {
+    final Sessionmanagement _sessionManager = Sessionmanagement();
+    userInfo = (await _sessionManager.getUserInfo())!;
     setState(() {
+      email = userInfo['email'];
+      id = userInfo['id'];
+    });
+    print('Email: $email');
+    print('ID: $id');
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    // Retrieve products from Firebase
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('addcart')
+        .where('userid', isEqualTo: id)
+        .get();
+
+    setState(() {
+      products = snapshot.docs.map((doc) {
+        return AddCartModel(
+          id: doc['userid'],
+          productname: doc['productName'],
+          image: doc['imageUrl'],
+          size: doc['size'],
+          price: doc['price'],
+          quantity: doc['quantity'],
+        );
+      }).toList();
+      filteredProducts = products;
       isLoading = false; // Set loading to false after loading products
+      checked = List<bool>.filled(products.length, false);
     });
   }
 
@@ -143,10 +176,10 @@ class _AddCartPageState extends State<AddCartPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const SizedBox(height: 10),
-                          Image.asset(product.imageUrl, height: 100, width: 100), // Adjust the height and width as needed
+                          Image.asset(product.image, height: 100, width: 100), // Adjust the height and width as needed
                           const SizedBox(height: 10), // Space between image and text
                           Text(
-                            product.name,
+                            product.productname,
                             style: const TextStyle(
                               color: Colors.white, // Set the text color here
                               fontFamily: 'Roboto',
@@ -164,7 +197,26 @@ class _AddCartPageState extends State<AddCartPage> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 10), // Space between price and button
+                          const SizedBox(height: 10), // Space between price and quantity
+                          Text(
+                            'Quantity: ${product.quantity}',
+                            style: const TextStyle(
+                              color: Colors.white, // Set the text color here
+                              fontFamily: 'Roboto',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 10), // Space between quantity and checkbox
+                          Checkbox(
+                            value: checked[index],
+                            onChanged: (bool? value) {
+                              setState(() {
+                                checked[index] = value!;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 10), // Space between checkbox and button
                           Center(
                             child: Container(
                               width: 350, // Adjust the width as needed
