@@ -10,9 +10,10 @@ class AddCartService {
     ProgressDialog pd = ProgressDialog(context: context);
     pd.show(max: 100, msg: 'Adding to cart...');
     try{
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('addcart').where('userid', isEqualTo: cartData['userid']).get();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('addcart').where('userid', isEqualTo: cartData['userid'])
+          .where('productName', isEqualTo: cartData['productName']).
+      get();
       if (querySnapshot.docs.isNotEmpty) {
-
       Fluttertoast.showToast(msg: 'Item already in cart',
         backgroundColor: Colors.red,
         textColor: const Color(0xFFFFFFFF),
