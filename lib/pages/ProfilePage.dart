@@ -118,6 +118,7 @@ class ProfilePageState extends State<ProfilePage> {
                     text: 'FAQS',
                     onTap: () {
                       print('FAQS clicked');
+                      context.push('/faq');
                     },
                   ),
                   const SizedBox(height: 20),
