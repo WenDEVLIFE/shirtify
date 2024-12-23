@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shirtify/component/SessionManagement.dart';
+import 'package:shirtify/pages/AboutPage.dart';
 import 'package:shirtify/pages/ChangePassword_Page.dart';
 import 'package:shirtify/pages/DisplayProduct.dart';
 import 'package:shirtify/pages/LoginPage.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
         }),
         GoRoute(path: '/changepassword', builder: (context, state) => const ChangePasswordPage()),
         GoRoute(path: '/orders', builder: (context, state) => const Orderspage()),
+        GoRoute(path: '/about', builder: (context, state) => const AboutPage()),
       ],
     );
 
