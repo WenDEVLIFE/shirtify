@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shirtify/component/SessionManagement.dart';
 import 'package:shirtify/pages/ChangePassword_Page.dart';
 import 'package:shirtify/pages/DisplayProduct.dart';
 import 'package:shirtify/pages/LoginPage.dart';
@@ -13,35 +14,35 @@ import 'component/bottomnavigation.dart';
 import 'database/FirebaseRun.dart';
 
 void main() async {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
   await FirebaseRun.run();
+  final Sessionmanagement sessionManager = Sessionmanagement();
+  final userInfo = await sessionManager.getUserInfo();
+  runApp(MyApp(userInfo: userInfo));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Map<String, dynamic>? userInfo;
+  const MyApp({super.key, this.userInfo});
 
   @override
   Widget build(BuildContext context) {
-
     final GoRouter route = GoRouter(
-        routes: [
-        GoRoute(path: '/', builder: (context, state) => MyHomePage(title: 'Flutter Demo Home Page')),
+      routes: [
+        GoRoute(path: '/', builder: (context, state) => MyHomePage(title: 'Flutter Demo Home Page', userInfo: userInfo)),
         GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
-          GoRoute(path: '/signup', builder: (context, state) => const RegisterPage()),
-          GoRoute(path: '/bottomnavigation', builder: (context, state){
-            final extra = state.extra as Map<String, dynamic>;
-
-            return Bottomnavigation(extra: extra);
-          }),
-          GoRoute(path: '/displayproduct', builder: (context, state){
-            final extra = state.extra as Map<String, dynamic>;
-
-            return DisplayProduct(extra: extra);
-          }),
-          GoRoute(path: '/changepassword', builder: (context, state) => const ChangePasswordPage()),
-          GoRoute(path:'/orders' , builder: (context, state) => const Orderspage()),
-
-        ],
+        GoRoute(path: '/signup', builder: (context, state) => const RegisterPage()),
+        GoRoute(path: '/bottomnavigation', builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return Bottomnavigation(extra: extra);
+        }),
+        GoRoute(path: '/displayproduct', builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return DisplayProduct(extra: extra);
+        }),
+        GoRoute(path: '/changepassword', builder: (context, state) => const ChangePasswordPage()),
+        GoRoute(path: '/orders', builder: (context, state) => const Orderspage()),
+      ],
     );
 
     return MaterialApp.router(
@@ -57,9 +58,10 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  final Map<String, dynamic>? userInfo;
   final String title;
 
+  const MyHomePage({super.key, required this.title, this.userInfo});
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -81,19 +83,19 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _isLoading = false;
 
-        if(Firebase.apps.isEmpty){
+        if (Firebase.apps.isEmpty) {
           print('Firebase not initialized');
-        }
-
-        else{
+        } else {
           print('Firebase initialized');
         }
 
-        GoRouter.of(context).go('/login');
+        if (widget.userInfo != null) {
+          GoRouter.of(context).go('/bottomnavigation', extra: widget.userInfo);
+        } else {
+          GoRouter.of(context).go('/login');
+        }
       });
-
     });
-
   }
 
   @override

@@ -271,6 +271,7 @@ class _RegisterPageState extends State<RegisterPage> {
       Map <String, dynamic> userdata = {
         'email': email,
         'password': password,
+        'role': 'user',
       };
        RegisterService().registerUser(userdata, context);
 

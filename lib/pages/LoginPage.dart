@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shirtify/database/LoginServices.dart';
 
 import '../component/Colors.dart';
 import '../component/Images.dart';
@@ -145,12 +147,23 @@ class _LoginPageState extends State<LoginPage>{
                             child: ElevatedButton(
                               onPressed: () {
                                 // call the controller
-                                Map <String, dynamic> extra = {
-                                  'email': emailController.text,
-                                  'role' : 'User',
-                                  'id' : '1',
-                                };
-                                context.go('/bottomnavigation', extra: extra);
+                               if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+                                 // call the controller
+                                 Map <String, dynamic> userdata = {
+                                   'email': emailController.text,
+                                   'password': passwordController.text,
+                                 };
+                                  LoginServices().loginUser(userdata, context);
+
+                               } else {
+                                 // call the controller
+                                  Fluttertoast.showToast(msg: 'Please fill in all fields',
+                                    backgroundColor: const Color(0xFF6E738E),
+                                    textColor: const Color(0xFFFFFFFF),
+                                    fontSize: 16.0,
+                                  );
+                               }
+
 
                               },
                               style: ElevatedButton.styleFrom(
