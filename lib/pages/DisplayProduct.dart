@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shirtify/database/AddCart.dart';
 
 import '../component/Colors.dart';
 import '../component/SessionManagement.dart';
@@ -250,6 +251,18 @@ class _DisplayProductState extends State<DisplayProduct> {
                             onPressed: () {
                               // call the controller
                               print('Add to Cart: $quantity, Size: $selectedSize');
+
+                              Map <String, dynamic> cartData = {
+                                'email': email,
+                                'userid': id,
+                                'productName': name,
+                                'price': price,
+                                'imageUrl': image,
+                                'quantity': quantity,
+                                'size': selectedSize,
+                              };
+
+                              AddCartService().addCart(cartData, context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: ColorsPallete.whitegray, // Background color of the button
