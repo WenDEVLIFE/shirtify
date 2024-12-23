@@ -54,7 +54,7 @@ class _AddCartPageState extends State<AddCartPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Shop',
+          'Add to cart',
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Roboto',

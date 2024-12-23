@@ -77,6 +77,7 @@ class ProfilePageState extends State<ProfilePage> {
                     text: 'CHANGE PASSWORD',
                     onTap: () {
                       print('Account Settings clicked');
+                      context.push('/changepassword');
                     },
                   ),
                   const SizedBox(height: 20),

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shirtify/pages/ChangePassword_Page.dart';
 import 'package:shirtify/pages/DisplayProduct.dart';
 import 'package:shirtify/pages/LoginPage.dart';
 import 'package:shirtify/pages/RegisterPage.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
 
             return DisplayProduct(extra: extra);
           }),
+          GoRoute(path: '/changepassword', builder: (context, state) => const ChangePasswordPage()),
 
         ],
     );
