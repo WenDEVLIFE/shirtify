@@ -17,6 +17,8 @@ class ProfilePageState extends State<ProfilePage> {
   late String id;
   Map<String, dynamic> userInfo = {};
 
+  final Sessionmanagement _sessionManager = Sessionmanagement();
+
   @override
   void initState() {
     super.initState();
@@ -24,7 +26,6 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> LoadUser() async {
-    final Sessionmanagement _sessionManager = Sessionmanagement();
     userInfo = (await _sessionManager.getUserInfo())!;
     setState(() {
       email = userInfo['email'];
@@ -145,6 +146,7 @@ class ProfilePageState extends State<ProfilePage> {
                         child: ElevatedButton(
                           onPressed: () {
                             // call the controller
+                            Logout();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: ColorsPallete.orange,
@@ -221,5 +223,42 @@ class ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  void Logout() {
+    showDialog(context: context, builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: ColorsPallete.orange,
+        title: const Text('Logout', style: TextStyle(color: ColorsPallete.white,
+            fontFamily: 'Roboto',
+            fontWeight: FontWeight.w700)),
+        content: const Text('Are you sure you want to logout?',
+            style: TextStyle(color: ColorsPallete.white,
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w400)),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel', style: TextStyle(
+                color: ColorsPallete.white,
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w700)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _sessionManager.clearUserInfo();
+              GoRouter.of(context).go('/login');
+            },
+            child: const Text('Logout', style: TextStyle(
+                color: ColorsPallete.white,
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w700)),
+          ),
+        ],
+      );
+    });
   }
 }

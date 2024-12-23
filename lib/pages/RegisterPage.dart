@@ -249,18 +249,18 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void VerifyData(){
+  void VerifyData() {
     String email = emailController.text;
     String password = passwordController.text;
     String confirmPassword = confirmPasswordController.text;
 
-    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty){
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill all fields'),
         ),
       );
-    } else if (password != confirmPassword){
+    } else if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Passwords do not match'),
@@ -268,16 +268,18 @@ class _RegisterPageState extends State<RegisterPage> {
       );
     } else {
       // Call the register function
-      Map <String, dynamic> userdata = {
+      Map<String, dynamic> userdata = {
         'email': email,
         'password': password,
         'role': 'user',
       };
-       RegisterService().registerUser(userdata, context);
-
+      RegisterService().registerUser(userdata, context, ClearFields);
     }
-
   }
 
-
+  void ClearFields() {
+    emailController.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+  }
 }

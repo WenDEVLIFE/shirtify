@@ -2,15 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shirtify/component/Colors.dart';
 import 'package:sn_progress_dialog/progress_dialog.dart';
 
-class RegisterService{
-
-  Future<void> registerUser(Map<String, dynamic> userdata, BuildContext context) async{
-
+class RegisterService {
+  Future<void> registerUser(Map<String, dynamic> userdata, BuildContext context, void Function() clearFields) async {
     ProgressDialog pd = ProgressDialog(context: context);
-    pd.show(max: 100, msg: 'Registering User' , backgroundColor: ColorsPallete.orange);
+    pd.show(max: 100, msg: 'Registering User', backgroundColor: ColorsPallete.orange);
 
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: userdata['email']).get();
@@ -21,12 +20,12 @@ class RegisterService{
         await FirebaseFirestore.instance.collection('users').add(userdata);
         pd.close();
         Fluttertoast.showToast(msg: 'User registered successfully', backgroundColor: Colors.green);
+        clearFields();
+        context.go('/login');
       }
-
-    }catch(e){
+    } catch (e) {
       print(e);
-    }
-    finally{
+    } finally {
       pd.close();
     }
   }
