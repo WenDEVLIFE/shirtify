@@ -10,9 +10,11 @@ import 'package:shirtify/pages/RegisterPage.dart';
 import 'component/Colors.dart';
 import 'component/Images.dart';
 import 'component/bottomnavigation.dart';
+import 'database/FirebaseRun.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
+  await FirebaseRun.run();
 }
 
 class MyApp extends StatelessWidget {
@@ -78,6 +80,14 @@ class _MyHomePageState extends State<MyHomePage> {
     Future.delayed(const Duration(seconds: 5), () {
       setState(() {
         _isLoading = false;
+
+        if(Firebase.apps.isEmpty){
+          print('Firebase not initialized');
+        }
+
+        else{
+          print('Firebase initialized');
+        }
 
         GoRouter.of(context).go('/login');
       });

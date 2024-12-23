@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "207247085456",
+    "project_id": "shirtify-b8c04",
+    "storage_bucket": "shirtify-b8c04.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207247085456:android:b5746b2feaa047408a6d15",
+        "android_client_info": {
+          "package_name": "com.example.shirtify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUoMDMX-iwG3U30rTlJ-iMOXviAD1JMJA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
