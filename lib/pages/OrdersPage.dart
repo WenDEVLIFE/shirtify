@@ -90,6 +90,16 @@ class OrderState extends State<Orderspage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: ColorsPallete.white,
+            size: 50,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: const Text(
           'My Orders',
           style: TextStyle(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../component/Colors.dart';
+import '../component/SessionManagement.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -12,6 +13,27 @@ class ProfilePage extends StatefulWidget {
 }
 
 class ProfilePageState extends State<ProfilePage> {
+  late String email;
+  late String id;
+  Map<String, dynamic> userInfo = {};
+
+  @override
+  void initState() {
+    super.initState();
+    LoadUser();
+  }
+
+  Future<void> LoadUser() async {
+    final Sessionmanagement _sessionManager = Sessionmanagement();
+    userInfo = (await _sessionManager.getUserInfo())!;
+    setState(() {
+      email = userInfo['email'];
+      id = userInfo['id'];
+      print('Email: $email');
+      print('ID: $id');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,45 +51,46 @@ class ProfilePageState extends State<ProfilePage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Container(
-            color: Colors.transparent, // Set the background color here
+            color: Colors.transparent,
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
                   Container(
-                    width: 460, // Adjust the width based on available space
+                    width: 460,
                     padding: const EdgeInsets.all(16),
                     decoration: const BoxDecoration(
-                     image: DecorationImage(
-                       image: AssetImage('assets/images/shopbg.jpg'),
-                       fit: BoxFit.cover, // Adjust this to control how the image fits
-                     ),
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/shopbg.jpg'),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          width: 100, // Adjust the width as needed
-                          height: 100, // Adjust the height as needed
+                          width: 100,
+                          height: 100,
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle, // Make the container circular
-                            border: Border.all(color: ColorsPallete.orange, width: 2), // Optional border
+                            shape: BoxShape.circle,
+                            border: Border.all(color: ColorsPallete.orange, width: 2),
                           ),
                           child: ClipOval(
                             child: Image.asset(
-                              'assets/icons/logo.png', // Replace with your image path
+                              'assets/icons/logo.png',
                               fit: BoxFit.cover,
                             ),
                           ),
                         ),
-                        Text(
-                          'John Doe',
-                          style: TextStyle(
-                            fontSize: 24,
-                            color: ColorsPallete.whiteish,
-                            fontFamily: 'Roboto',
-                            fontWeight: FontWeight.w700,
+                        if (userInfo.isNotEmpty) // Check if userInfo is initialized
+                          Text(
+                            "$email",
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: ColorsPallete.whiteish,
+                              fontFamily: 'Roboto',
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -109,21 +132,21 @@ class ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 80),
                   Center(
                     child: Container(
-                      width: constraints.maxWidth * 0.5, // Adjust the width based on available space
+                      width: constraints.maxWidth * 0.5,
                       decoration: BoxDecoration(
-                        color: Colors.transparent, // Background color of the TextField
+                        color: Colors.transparent,
                         borderRadius: BorderRadius.circular(5),
-                        border: Border.all(color: Colors.transparent), // Border color
+                        border: Border.all(color: Colors.transparent),
                       ),
                       child: ButtonTheme(
-                        minWidth: 100, // Adjust the width as needed
-                        height: 100, // Adjust the height as needed
+                        minWidth: 100,
+                        height: 100,
                         child: ElevatedButton(
                           onPressed: () {
                             // call the controller
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorsPallete.orange, // Background color of the button
+                            backgroundColor: ColorsPallete.orange,
                           ),
                           child: const Text(
                             'SIGN OUT',
@@ -188,10 +211,10 @@ class ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 8),
             const Divider(
-              color: ColorsPallete.whitegray, // Color of the line
-              thickness: 5, // Thickness of the line
-              indent: 20, // Left indent
-              endIndent: 20, // Right indent
+              color: ColorsPallete.whitegray,
+              thickness: 5,
+              indent: 20,
+              endIndent: 20,
             ),
           ],
         ),
