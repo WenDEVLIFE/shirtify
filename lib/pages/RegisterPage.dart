@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../component/Colors.dart';
 import '../component/Images.dart';
+import '../database/AddUser.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -179,7 +180,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: ElevatedButton(
                               onPressed: () {
                                 // call the controller
-
+                                VerifyData();
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: ColorsPallete.orange, // Background color of the button
@@ -247,4 +248,35 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
+  void VerifyData(){
+    String email = emailController.text;
+    String password = passwordController.text;
+    String confirmPassword = confirmPasswordController.text;
+
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill all fields'),
+        ),
+      );
+    } else if (password != confirmPassword){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+        ),
+      );
+    } else {
+      // Call the register function
+      Map <String, dynamic> userdata = {
+        'email': email,
+        'password': password,
+      };
+       RegisterService().registerUser(userdata, context);
+
+    }
+
+  }
+
+
 }
