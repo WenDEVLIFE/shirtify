@@ -92,15 +92,134 @@ class _AddCartPageState extends State<AddCartPage> {
     }
 
     if (selectedProducts.isNotEmpty) {
-      final OrderService orderService = OrderService();
-      await orderService.addOrder(selectedProducts, id);
-      setState(() {
-        products.removeWhere((product) => selectedProducts.contains(product));
-        filteredProducts = products;
-        checked = List<bool>.filled(products.length, false);
-        totalAmount = 0.0;
-      });
+      await _showCreditCardDialog(selectedProducts);
     }
+  }
+
+  Future<void> _showCreditCardDialog(List<AddCartModel> selectedProducts) async {
+    final TextEditingController cardNumberController = TextEditingController();
+    final TextEditingController expiryDateController = TextEditingController();
+    final TextEditingController cvvController = TextEditingController();
+    final TextEditingController amountController = TextEditingController(
+        text: totalAmount.toStringAsFixed(2));
+
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: ColorsPallete.orange,
+          title: const Text('Enter Credit Card Information', style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              fontFamily: 'Roboto')),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  controller: cardNumberController,
+                  decoration: const InputDecoration(labelText: 'Card Number',
+                      labelStyle: TextStyle(color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Roboto')),
+                  keyboardType: TextInputType.number,
+                ),
+                TextField(
+                  controller: expiryDateController,
+                  decoration: const InputDecoration(
+                      labelText: 'Expiry Date (MM/YY)',
+                      labelStyle: TextStyle(color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Roboto')),
+                  keyboardType: TextInputType.datetime,
+                ),
+                TextField(
+                  controller: cvvController,
+                  decoration: const InputDecoration(labelText: 'CVV',
+                      labelStyle: TextStyle(color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Roboto')),
+                  keyboardType: TextInputType.number,
+                  obscureText: true,
+                ),
+                TextField(
+                  controller: amountController,
+                  decoration: const InputDecoration(labelText: 'Amount',
+                      labelStyle: TextStyle(color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Roboto')),
+                  keyboardType: TextInputType.number,
+                  enabled: false,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Confirm'),
+              onPressed: () async {
+                if (cardNumberController.text.isEmpty ||
+                    expiryDateController.text.isEmpty ||
+                    cvvController.text.isEmpty) {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        backgroundColor: ColorsPallete.orange,
+                        title: const Text('Error' , style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Roboto')),
+                        content: const Text('Please fill in all fields', style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Roboto')),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('OK' , style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Roboto')),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  // Execute the OrderService
+                  final OrderService orderService = OrderService();
+                  await orderService.addOrder(selectedProducts, id, totalAmount);
+                  setState(() {
+                    products.removeWhere((product) =>
+                        selectedProducts.contains(product));
+                    filteredProducts = products;
+                    checked = List<bool>.filled(products.length, false);
+                    totalAmount = 0.0;
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
